@@ -16,7 +16,7 @@ import {
 
 export default function Dashboard() {
     return (
-        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-20">
+        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-10">
 
             {/* 1. Page Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-2">
