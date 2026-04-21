@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   /* Core Mappings: These link Tailwind classes to your CSS variables */
   --color-background: var(--background);
@@ -20,14 +22,16 @@
 
 /* Light Mode Tokens */
 :root {
-  --background: rgb(4, 77, 43);
+  /* THE FIX: Changed from dark green to a soft light slate/gray */
+  --background: #f8fafc; 
+  
   --foreground: #0f172a;
   --surface: #ffffff;
   --primary: #4f46e5;
 
   /* SOFT LOOK: Use a very faint slate for borders instead of black/gray */
-  --border: #eef2f6;
-  --muted: #f8fafc;
+  --border: #e2e8f0; /* Darkened slightly so borders are visible on white cards */
+  --muted: #f1f5f9;  /* Perfect for subtle button backgrounds */
 
   --sidebar-bg: #e6f5f4;
   --sidebar-text: #0f172a;
@@ -60,12 +64,7 @@ html[data-theme="dark"] {
     @apply border-border transition-colors duration-300;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
   }
 }

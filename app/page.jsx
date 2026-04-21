@@ -16,10 +16,10 @@ export default function GlobalHome() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href="/register"
+            href="/signup"
             className="px-10 py-4 bg-primary text-on-primary rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
           >
-            Get Started
+            Sign Up
           </Link>
           <Link
             href="/login"

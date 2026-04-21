@@ -1,12 +1,12 @@
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
-// import AuthChecker from "@/components/AuthChecker";
+import AuthChecker from "@/components/layout/AuthChecker";
 
 export default function ProtectedLayout({ children }) {
   return (
-    // <AuthChecker>
+    <AuthChecker>
       <LayoutWrapper>
         {children}
       </LayoutWrapper>
-    // </AuthChecker>
+    </AuthChecker>
   );
 }

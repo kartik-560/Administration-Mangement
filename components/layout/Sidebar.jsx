@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter, usePathname } from "next/navigation";
 import { LuUsers } from "react-icons/lu";
-import { logout } from "@/features/store/authSlice"; // Ensure this path matches your setup
+import { logout } from "@/features/store/authSlice"; 
 import Link from "next/link";
 import {
     LogOut,
@@ -27,7 +27,6 @@ const Sidebar = () => {
     const router = useRouter();
     const pathname = usePathname();
 
-    // 1. Hover Handlers for Desktop
     const handleMouseEnter = () => {
         if (!isMobile) setSidebarOpen(true);
     };
@@ -36,13 +35,11 @@ const Sidebar = () => {
         if (!isMobile) setSidebarOpen(false);
     };
 
-    // 2. Route Check
     const isRouteActive = (href) => {
         if (!href) return false;
         return pathname === href || pathname.startsWith(href + "/");
     };
 
-    // 3. Mobile Detection
     useEffect(() => {
         const checkMobile = () => {
             const mobile = window.innerWidth < 1024;
@@ -55,20 +52,21 @@ const Sidebar = () => {
     }, []);
 
     const handleLogout = () => {
+        // ✅ UPDATED: Clear both token and user object
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
         dispatch(logout());
         router.push("/login");
     };
 
-    // Mock Menu Items
     const menuItems = [
         { label: "Overview", icon: Building, href: "/admin/dashboard" },
         { label: "User Management", icon: LuUsers, href: "/register" },
-        // ... add others
     ];
 
     return (
         <>
-            {/* Mobile Toggle */}
             {isMobile && (
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -78,7 +76,6 @@ const Sidebar = () => {
                 </button>
             )}
 
-            {/* ✅ FIXED WRAPPER CLASSES HERE */}
             <aside
                 ref={sidebarRef}
                 onMouseEnter={handleMouseEnter}
@@ -91,7 +88,6 @@ const Sidebar = () => {
                     }
                 `}
             >
-                {/* HEADER / LOGO SECTION */}
                 <div className="h-20 flex items-center px-6 border-b border-border/40 overflow-hidden">
                     <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
                         <Building size={20} />
@@ -102,7 +98,6 @@ const Sidebar = () => {
                     </div>
                 </div>
 
-                {/* NAV ITEMS */}
                 <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
                     {menuItems.map((item, index) => {
                         const Icon = item.icon;
@@ -129,7 +124,6 @@ const Sidebar = () => {
                     })}
                 </nav>
 
-                {/* FOOTER / USER CARD */}
                 <div className="p-4 border-t border-border/40 space-y-3">
                     <div className="bg-surface/50 border border-border/50 rounded-[1.5rem] p-2 flex items-center overflow-hidden">
                         <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
@@ -137,7 +131,11 @@ const Sidebar = () => {
                         </div>
                         <div className={`ml-3 transition-all duration-300 ${sidebarOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
                             <p className="text-xs font-bold text-foreground truncate w-40">{user?.name || "Admin"}</p>
-                            <p className="text-[9px] font-black uppercase tracking-tighter text-primary">Superadmin</p>
+                            
+                            {/* ✅ FIXED: Role is now dynamic instead of hardcoded "Superadmin" */}
+                            <p className="text-[9px] font-black uppercase tracking-tighter text-primary">
+                                {user?.role || "User"}
+                            </p>
                         </div>
                     </div>
 

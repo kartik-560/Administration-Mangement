@@ -18,7 +18,7 @@ export default function LayoutWrapper({ children }) {
 
     return (
         // 1. The outermost container: Full screen, prevents scrolling on the body, flex row
-        <div className="flex h-screen w-full overflow-hidden bg-background">
+     <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-slate-950">
             
             {/* 2. Sidebar goes here. It will naturally take up the left side and full height. */}
             <Sidebar />

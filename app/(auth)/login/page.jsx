@@ -3,45 +3,68 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { setUser } from "../../../features/store/authSlice"; // Ensure this matches where we built your store
-import { LuGraduationCap, LuMail, LuLock, LuLoader } from "react-icons/lu";
+import { setUser } from "../../../features/store/authSlice";
+import {
+  LuGraduationCap,
+  LuMail,
+  LuLock,
+  LuLoader,
+  LuEye,
+  LuEyeOff,
+} from "react-icons/lu";
+
+import { loginUserApi } from "@/features/auth/login/login.api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
-    // Mocking an API call delay
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await loginUserApi(email, password);
 
-      // Basic validation check (replace with your actual backend authentication)
-      if (email && password) {
-        // 1. Send the user data to your Redux store
-        dispatch(
-          setUser({
-            name: "Kartik Admin",
-            email: email,
-            role: "Superadmin",
-          })
-        );
+      if (response.success) {
+        // 1. Save the JWT token
+        localStorage.setItem("token", response.token);
 
-        // 2. Redirect to the dashboard
+        // 2. THE KEY ADDITION: Save the user object to localStorage
+        // This prevents the AuthChecker from redirecting you back to login
+        // because it allows the app to "remember" you even if Redux resets.
+        const userPayload = {
+          id: response.user.id,
+          name: `${response.user.firstName} ${response.user.lastName}`,
+          email: response.user.email,
+          role: response.user.role,
+          roleId: response.user.roleId,
+          collegeId: response.user.collegeId,
+        };
+
+        localStorage.setItem("user", JSON.stringify(userPayload));
+
+        // 3. Update Redux store
+        dispatch(setUser(userPayload));
+
+        // 4. Redirect to the dashboard
+        // Note: Using router.push is fine here since we are moving forward
         router.push("/admin/dashboard");
-      } else {
-        setError("Please enter valid credentials.");
       }
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +81,6 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Card Container */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl p-8">
-
           {/* Header */}
           <div className="flex flex-col items-center mb-8 text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg mb-4">
@@ -105,26 +127,52 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative">
+                {/* Left Icon (Lock) */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <LuLock className="text-slate-400 text-lg" />
                 </div>
+
+                {/* Input Field */}
                 <input
-                  type="password"
+                  // Toggle between "text" and "password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  // Note: Increased pr-4 to pr-12 to make room for the right-side button
+                  className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                   placeholder="••••••••"
                   required
                 />
+
+                {/* Right Icon (View/Hide Button) */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                >
+                  {showPassword ? (
+                    <LuEyeOff className="text-lg" />
+                  ) : (
+                    <LuEye className="text-lg" />
+                  )}
+                </button>
               </div>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded border-slate-300 text-primary focus:ring-primary" />
-                <span className="text-slate-600 dark:text-slate-400">Remember me</span>
+                <input
+                  type="checkbox"
+                  className="rounded border-slate-300 text-primary focus:ring-primary"
+                />
+                <span className="text-slate-600 dark:text-slate-400">
+                  Remember me
+                </span>
               </label>
-              <a href="#" className="font-semibold text-primary hover:text-primary/80 transition-colors">
+              <a
+                href="#"
+                className="font-semibold text-primary hover:text-primary/80 transition-colors"
+              >
                 Forgot password?
               </a>
             </div>
