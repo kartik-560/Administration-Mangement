@@ -159,20 +159,20 @@ function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAdd
           subColor="text-[#4c6ef5]"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>}
         />
-        <StatCard
+        {/* <StatCard
           accent="bg-purple-500/10 text-purple-600 dark:text-purple-400"
           label="Total Students" value="248" sub="SEM I–VIII enrolled"
           subColor="text-purple-600 dark:text-purple-400"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>}
-        />
-        <StatCard
+        /> */}
+        {/* <StatCard
           accent="bg-green-500/10 text-green-600 dark:text-green-400"
           label="Avg Attendance" 
           value={`${latestAttendance}%`} 
           sub="Latest Month Average"
           subColor="text-green-600 dark:text-green-400"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M9 11.75c-2.34 0-7 1.17-7 3.5V19h14v-3.75c0-2.33-4.66-3.5-7-3.5zM9 10c1.66 0 3-1.34 3-3S10.66 4 9 4 6 5.34 6 8s1.34 2 3 2zm11.5 1-1.4-1.4L15 13.7l-2.1-2.1-1.4 1.4 3.5 3.5z"/></svg>}
-        />
+        /> */}
         <StatCard
           accent="bg-amber-500/10 text-amber-600 dark:text-amber-400"
           label="Pending Approvals"
@@ -448,42 +448,42 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
 /* ═══════════════════════════════════════════
    SECTION: STUDENT PERFORMANCE
 ═══════════════════════════════════════════ */
-function PerformanceSection() {
-  const best = [...STUDENT_PERFORMANCE].sort((a, b) => b.passRate - a.passRate)[0];
-  return (
-    <div className="space-y-5">
-      <div className="bg-gradient-to-r from-[#4c6ef5] to-[#748ffc] rounded-2xl p-5 text-white flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-bold opacity-80 uppercase tracking-wider m-0">Best Performing Semester</p>
-          <h2 className="text-2xl font-bold m-0 mt-1">{best.sem}</h2>
-          <p className="text-sm opacity-90 m-0 mt-0.5">Pass Rate: <b>{best.passRate}%</b> · Avg Marks: <b>{best.avg}%</b></p>
-        </div>
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-14 h-14 opacity-20"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V17H9v2h6v-2h-2v-1.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {STUDENT_PERFORMANCE.map((sp) => (
-          <div key={sp.sem} className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white m-0">{sp.sem}</h4>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sp.passRate >= 90 ? "bg-green-500/10 text-green-600" : sp.passRate >= 80 ? "bg-blue-500/10 text-[#4c6ef5]" : "bg-red-500/10 text-red-500"}`}>{sp.passRate}% Pass</span>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Pass Rate</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.passRate}%</span></div>
-                <MiniBar value={sp.passRate} color={sp.passRate >= 90 ? "bg-green-500" : sp.passRate >= 80 ? "bg-[#4c6ef5]" : "bg-red-500"} />
-              </div>
-              <div>
-                <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Avg Marks</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.avg}%</span></div>
-                <MiniBar value={sp.avg} color="bg-purple-500" />
-              </div>
-              <div className="flex justify-between pt-1"><span className="text-[10px] text-gray-500 font-medium">Students with Backlog</span><span className={`text-[10px] font-bold ${sp.backlog > 15 ? "text-red-500" : "text-green-600"}`}>{sp.backlog}</span></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// function PerformanceSection() {
+//   const best = [...STUDENT_PERFORMANCE].sort((a, b) => b.passRate - a.passRate)[0];
+//   return (
+//     <div className="space-y-5">
+//       <div className="bg-gradient-to-r from-[#4c6ef5] to-[#748ffc] rounded-2xl p-5 text-white flex flex-wrap items-center justify-between gap-4">
+//         <div>
+//           <p className="text-xs font-bold opacity-80 uppercase tracking-wider m-0">Best Performing Semester</p>
+//           <h2 className="text-2xl font-bold m-0 mt-1">{best.sem}</h2>
+//           <p className="text-sm opacity-90 m-0 mt-0.5">Pass Rate: <b>{best.passRate}%</b> · Avg Marks: <b>{best.avg}%</b></p>
+//         </div>
+//         <svg viewBox="0 0 24 24" fill="currentColor" className="w-14 h-14 opacity-20"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V17H9v2h6v-2h-2v-1.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
+//       </div>
+//       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+//         {STUDENT_PERFORMANCE.map((sp) => (
+//           <div key={sp.sem} className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+//             <div className="flex items-center justify-between mb-4">
+//               <h4 className="text-sm font-bold text-gray-900 dark:text-white m-0">{sp.sem}</h4>
+//               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sp.passRate >= 90 ? "bg-green-500/10 text-green-600" : sp.passRate >= 80 ? "bg-blue-500/10 text-[#4c6ef5]" : "bg-red-500/10 text-red-500"}`}>{sp.passRate}% Pass</span>
+//             </div>
+//             <div className="space-y-3">
+//               <div>
+//                 <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Pass Rate</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.passRate}%</span></div>
+//                 <MiniBar value={sp.passRate} color={sp.passRate >= 90 ? "bg-green-500" : sp.passRate >= 80 ? "bg-[#4c6ef5]" : "bg-red-500"} />
+//               </div>
+//               <div>
+//                 <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Avg Marks</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.avg}%</span></div>
+//                 <MiniBar value={sp.avg} color="bg-purple-500" />
+//               </div>
+//               <div className="flex justify-between pt-1"><span className="text-[10px] text-gray-500 font-medium">Students with Backlog</span><span className={`text-[10px] font-bold ${sp.backlog > 15 ? "text-red-500" : "text-green-600"}`}>{sp.backlog}</span></div>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
 
 /* ═══════════════════════════════════════════
    SECTION: MEETINGS
@@ -701,9 +701,9 @@ export default function HODDashboard() {
   const TABS = [
     { id: "Overview",    label: "Overview",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> },
     { id: "Faculty",     label: "Faculty",     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> },
-    { id: "Performance", label: "Performance", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg> },
-    { id: "Meetings",    label: "Meetings",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg> },
-    { id: "Research",    label: "Research",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
+    // { id: "Performance", label: "Performance", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg> },
+    // { id: "Meetings",    label: "Meetings",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg> },
+    // { id: "Research",    label: "Research",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
   ];
 
   const renderContent = () => {

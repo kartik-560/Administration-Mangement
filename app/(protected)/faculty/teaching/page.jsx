@@ -198,13 +198,13 @@ export default function TeachingDashboard() {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Dynamic Subjects Progress */}
-              <div className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6">
+              {/* <div className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6">
                 <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">Syllabus Coverage</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {subjects.map((subject) => (
-                    <div key={subject.id} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800 relative group">
+                    <div key={subject.id} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800 relative group"> */}
                        {/* Advance Progress Button */}
-                      <button 
+                      {/* <button 
                          onClick={() => handleIncreaseProgress(subject.id)}
                          className="absolute -top-2 -right-2 bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md text-xs hover:scale-110" title="Mark progress"
                       >
@@ -222,7 +222,7 @@ export default function TeachingDashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               {/* Dynamic Pending Tasks & Grading */}
               <div className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6">
@@ -234,7 +234,7 @@ export default function TeachingDashboard() {
                   {tasks.sort((a,b) => a.done === b.done ? 0 : a.done ? 1 : -1).map((task) => (
                     <div key={task.id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${task.done ? 'bg-gray-50 dark:bg-gray-900 border-transparent opacity-50' : 'border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`}>
                       <div className="flex items-center gap-3">
-                        <input type="checkbox" checked={task.done} onChange={() => handleToggleTask(task.id)} className="w-4 h-4 rounded border-gray-300 text-[#4c6ef5] focus:ring-[#4c6ef5] cursor-pointer" />
+                        {/* <input type="checkbox" checked={task.done} onChange={() => handleToggleTask(task.id)} className="w-4 h-4 rounded border-gray-300 text-[#4c6ef5] focus:ring-[#4c6ef5] cursor-pointer" /> */}
                         <div className={task.done ? 'line-through text-gray-500' : ''}>
                           <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{task.title}</p>
                           <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{task.subject} · Due: {task.deadline}</p>
