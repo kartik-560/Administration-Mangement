@@ -6,19 +6,12 @@ import Link from "next/link";
    MASTER DATA (defaults)
 ═══════════════════════════════════════════ */
 const DEFAULT_FACULTY = [
-  { id: "F001", name: "Mr. D. B. Khadse",   designation: "Associate Professor", subjects: ["Machine Learning", "AI"], workload: 18, status: "Active",  leaveToday: false, experience: "12 yrs" },
-  { id: "F002", name: "Ms. P. L. Katore",   designation: "Assistant Professor",  subjects: ["Compiler Design"],      workload: 14, status: "Active",  leaveToday: false, experience: "7 yrs"  },
-  { id: "F003", name: "Ms. A. N. Tikle",    designation: "Assistant Professor",  subjects: ["Data Science"],         workload: 16, status: "Active",  leaveToday: false, experience: "9 yrs"  },
-  { id: "F004", name: "Ms. S. S. Despande", designation: "Associate Professor",  subjects: ["EOII", "Networks"],     workload: 20, status: "Active",  leaveToday: true,  experience: "15 yrs" },
-  { id: "F005", name: "Mr. K. N. Hande",    designation: "Professor",            subjects: ["Mini Project", "DBMS"], workload: 12, status: "Active",  leaveToday: false, experience: "22 yrs" },
-  { id: "F006", name: "Ms. A. A. Nikose",   designation: "Assistant Professor",  subjects: ["IPR", "Ethics"],        workload: 10, status: "On Leave",leaveToday: true,  experience: "5 yrs"  },
-];
-
-const DEFAULT_LEAVE_REQUESTS = [
-  { id: "LR001", faculty: "Ms. A. A. Nikose",   from: "Apr 21", to: "Apr 23", reason: "Medical Leave",     status: "Pending",  type: "Medical"  },
-  { id: "LR002", faculty: "Ms. S. S. Despande", from: "Apr 22", to: "Apr 22", reason: "Personal Work",     status: "Pending",  type: "Personal" },
-  { id: "LR003", faculty: "Mr. D. B. Khadse",   from: "Apr 28", to: "Apr 30", reason: "Conference Attend", status: "Approved", type: "Official" },
-  { id: "LR004", faculty: "Ms. P. L. Katore",   from: "May 5",  to: "May 6",  reason: "Family Function",   status: "Rejected", type: "Personal" },
+  { id: "F001", name: "Mr. D. B. Khadse",   designation: "Associate Professor", subjects: ["Machine Learning", "AI"], workload: 18, status: "Active",  experience: "12 yrs" },
+  { id: "F002", name: "Ms. P. L. Katore",   designation: "Assistant Professor",  subjects: ["Compiler Design"],      workload: 14, status: "Active",  experience: "7 yrs"  },
+  { id: "F003", name: "Ms. A. N. Tikle",    designation: "Assistant Professor",  subjects: ["Data Science"],         workload: 16, status: "Active",  experience: "9 yrs"  },
+  { id: "F004", name: "Ms. S. S. Despande", designation: "Associate Professor",  subjects: ["EOII", "Networks"],     workload: 20, status: "Active",  experience: "15 yrs" },
+  { id: "F005", name: "Mr. K. N. Hande",    designation: "Professor",            subjects: ["Mini Project", "DBMS"], workload: 12, status: "Active",  experience: "22 yrs" },
+  { id: "F006", name: "Ms. A. A. Nikose",   designation: "Assistant Professor",  subjects: ["IPR", "Ethics"],        workload: 10, status: "Active",  experience: "5 yrs"  },
 ];
 
 const DEFAULT_NOTICES = [
@@ -39,7 +32,7 @@ const DEPT_ATTENDANCE = [
   { month: "Jan", rate: 87 },
   { month: "Feb", rate: 82 },
   { month: "Mar", rate: 78 },
-  { month: "Apr", rate: 84 }, // Latest month attendance
+  { month: "Apr", rate: 84 },
 ];
 
 const STUDENT_PERFORMANCE = [
@@ -84,17 +77,10 @@ const BADGE_MAP = {
   High:           "bg-red-500/10 text-red-600 border-red-500/25 dark:text-red-400",
   Medium:         "bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400",
   Low:            "bg-green-500/10 text-green-600 border-green-500/25 dark:text-green-400",
-  Approved:       "bg-green-500/10 text-green-600 border-green-500/25 dark:text-green-400",
-  Pending:        "bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400",
-  Rejected:       "bg-red-500/10 text-red-600 border-red-500/25 dark:text-red-400",
   Published:      "bg-blue-500/10 text-blue-600 border-blue-500/25 dark:text-blue-400",
   Submitted:      "bg-purple-500/10 text-purple-600 border-purple-500/25 dark:text-purple-400",
   "Under Review": "bg-amber-500/10 text-amber-600 border-amber-500/25 dark:text-amber-400",
   Active:         "bg-green-500/10 text-green-600 border-green-500/25 dark:text-green-400",
-  "On Leave":     "bg-gray-500/10 text-gray-600 border-gray-500/25 dark:text-gray-400",
-  Medical:        "bg-red-500/10 text-red-600 border-red-500/25 dark:text-red-400",
-  Personal:       "bg-purple-500/10 text-purple-600 border-purple-500/25 dark:text-purple-400",
-  Official:       "bg-blue-500/10 text-blue-600 border-blue-500/25 dark:text-blue-400",
 };
 
 const Badge = ({ label }) => (
@@ -127,17 +113,11 @@ function StatCard({ icon, label, value, sub, subColor = "text-gray-500", accent 
 /* ═══════════════════════════════════════════
    SECTION: OVERVIEW
 ═══════════════════════════════════════════ */
-// ✅ DYNAMIC: Added 'faculty' prop so it syncs instantly when new faculty is added
-function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAddNotice }) {
+function OverviewSection({ faculty, notices, onAddNotice }) {
   const [showNoticeForm, setShowNoticeForm] = useState(false);
   const [noticeForm, setNoticeForm] = useState({ title: "", date: "", priority: "Medium", category: "" });
 
-  const pendingCount = leaveRequests.filter(lr => lr.status === "Pending").length;
-  
-  // ✅ DYNAMIC: Uses real state array
   const totalFaculty = faculty.length; 
-  const activeToday  = faculty.filter(f => !f.leaveToday).length;
-  // ✅ DYNAMIC: Gets latest attendance rate
   const latestAttendance = DEPT_ATTENDANCE[DEPT_ATTENDANCE.length - 1].rate;
 
   const handleAddNotice = () => {
@@ -150,21 +130,21 @@ function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAdd
   return (
     <div className="space-y-6">
       {/* STAT CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <StatCard
           accent="bg-[#4c6ef5]/10 text-[#4c6ef5]"
           label="Total Faculty"
           value={totalFaculty} 
-          sub={`${activeToday} active today`}
+          sub="Active Department Members"
           subColor="text-[#4c6ef5]"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>}
         />
-        {/* <StatCard
+        <StatCard
           accent="bg-purple-500/10 text-purple-600 dark:text-purple-400"
           label="Total Students" value="248" sub="SEM I–VIII enrolled"
           subColor="text-purple-600 dark:text-purple-400"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>}
-        /> */}
+        />
         {/* <StatCard
           accent="bg-green-500/10 text-green-600 dark:text-green-400"
           label="Avg Attendance" 
@@ -173,14 +153,6 @@ function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAdd
           subColor="text-green-600 dark:text-green-400"
           icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M9 11.75c-2.34 0-7 1.17-7 3.5V19h14v-3.75c0-2.33-4.66-3.5-7-3.5zM9 10c1.66 0 3-1.34 3-3S10.66 4 9 4 6 5.34 6 8s1.34 2 3 2zm11.5 1-1.4-1.4L15 13.7l-2.1-2.1-1.4 1.4 3.5 3.5z"/></svg>}
         /> */}
-        <StatCard
-          accent="bg-amber-500/10 text-amber-600 dark:text-amber-400"
-          label="Pending Approvals"
-          value={pendingCount}
-          sub={pendingCount > 0 ? "Leave requests waiting" : "All requests processed ✓"}
-          subColor={pendingCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-green-600 dark:text-green-400"}
-          icon={<svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>}
-        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
@@ -201,90 +173,59 @@ function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAdd
           </div>
         </div>
 
-        {/* Leave Requests */}
+        {/* Notices */}
         <div className="lg:col-span-3 bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm flex flex-col overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white m-0">Leave Requests</h3>
-            {pendingCount > 0
-              ? <Badge label={`${pendingCount} Pending`} color="Pending" />
-              : <span className="text-[10px] font-bold text-green-600 dark:text-green-400">All Clear ✓</span>
-            }
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white m-0">Department Notices</h3>
+              {notices.filter(n => !n.read).length > 0 && (
+                <span className="w-5 h-5 rounded-full bg-[#4c6ef5] text-white text-[9px] font-bold flex items-center justify-center">
+                  {notices.filter(n => !n.read).length}
+                </span>
+              )}
+            </div>
+            <button onClick={() => setShowNoticeForm(s => !s)} className="text-[11px] font-bold text-[#4c6ef5] hover:underline">
+              + New Notice
+            </button>
           </div>
-          <div className="divide-y divide-gray-100 dark:divide-gray-800/50 flex-1 overflow-y-auto">
-            {leaveRequests.map((lr) => (
-              <div key={lr.id} className="px-5 py-3.5 flex flex-wrap items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                <div className="flex-1 min-w-[160px]">
-                  <p className="text-xs font-bold text-gray-900 dark:text-white m-0">{lr.faculty}</p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 m-0">{lr.from} → {lr.to} · {lr.reason}</p>
+
+          {showNoticeForm && (
+            <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Notice Title *</label>
+                <input value={noticeForm.title} onChange={e => setNoticeForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. NBA Documentation Deadline" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-[#4c6ef5] transition-colors placeholder-gray-400" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Date *</label>
+                <input value={noticeForm.date} onChange={e => setNoticeForm(f => ({ ...f, date: e.target.value }))} placeholder="e.g. May 15, 2026" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-[#4c6ef5] transition-colors placeholder-gray-400" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Priority</label>
+                <select value={noticeForm.priority} onChange={e => setNoticeForm(f => ({ ...f, priority: e.target.value }))} className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none">
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2 flex gap-3 justify-end">
+                <button onClick={() => setShowNoticeForm(false)} className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">Cancel</button>
+                <button onClick={handleAddNotice} className="px-4 py-1.5 bg-[#4c6ef5] text-white rounded-lg text-xs font-bold hover:bg-blue-600 active:scale-95 transition-all">Publish Notice</button>
+              </div>
+            </div>
+          )}
+
+          <div className="divide-y divide-gray-100 dark:divide-gray-800/50 flex-1 overflow-y-auto max-h-[300px]">
+            {notices.map((n) => (
+              <div key={n.id} className={`px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors ${!n.read ? "bg-blue-50/30 dark:bg-blue-900/5" : ""}`}>
+                <div className={`w-2 h-2 rounded-full shrink-0 ${!n.read ? "bg-[#4c6ef5]" : ""}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-gray-900 dark:text-white m-0 truncate">{n.title}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 m-0">{n.date}</p>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge label={lr.type} />
-                  <Badge label={lr.status} />
-                  {lr.status === "Pending" && (
-                    <div className="flex gap-1.5">
-                      <button onClick={() => onLeaveAction(lr.id, "Approved")} className="px-3 py-1 bg-green-500 text-white rounded-lg text-[10px] font-bold hover:bg-green-600 active:scale-95 transition-all">✓ Approve</button>
-                      <button onClick={() => onLeaveAction(lr.id, "Rejected")} className="px-3 py-1 bg-red-500 text-white rounded-lg text-[10px] font-bold hover:bg-red-600 active:scale-95 transition-all">✗ Reject</button>
-                    </div>
-                  )}
-                </div>
+                <Badge label={n.priority} />
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Notices */}
-      <div className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white m-0">Department Notices</h3>
-            {notices.filter(n => !n.read).length > 0 && (
-              <span className="w-5 h-5 rounded-full bg-[#4c6ef5] text-white text-[9px] font-bold flex items-center justify-center">
-                {notices.filter(n => !n.read).length}
-              </span>
-            )}
-          </div>
-          <button onClick={() => setShowNoticeForm(s => !s)} className="text-[11px] font-bold text-[#4c6ef5] hover:underline">
-            + New Notice
-          </button>
-        </div>
-
-        {showNoticeForm && (
-          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="sm:col-span-2">
-              <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Notice Title *</label>
-              <input value={noticeForm.title} onChange={e => setNoticeForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. NBA Documentation Deadline" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-[#4c6ef5] transition-colors placeholder-gray-400" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Date *</label>
-              <input value={noticeForm.date} onChange={e => setNoticeForm(f => ({ ...f, date: e.target.value }))} placeholder="e.g. May 15, 2026" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-[#4c6ef5] transition-colors placeholder-gray-400" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Priority</label>
-              <select value={noticeForm.priority} onChange={e => setNoticeForm(f => ({ ...f, priority: e.target.value }))} className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none">
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-            </div>
-            <div className="sm:col-span-2 flex gap-3 justify-end">
-              <button onClick={() => setShowNoticeForm(false)} className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleAddNotice} className="px-4 py-1.5 bg-[#4c6ef5] text-white rounded-lg text-xs font-bold hover:bg-blue-600 active:scale-95 transition-all">Publish Notice</button>
-            </div>
-          </div>
-        )}
-
-        <div className="divide-y divide-gray-100 dark:divide-gray-800/50">
-          {notices.map((n) => (
-            <div key={n.id} className={`px-5 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors ${!n.read ? "bg-blue-50/30 dark:bg-blue-900/5" : ""}`}>
-              <div className={`w-2 h-2 rounded-full shrink-0 ${!n.read ? "bg-[#4c6ef5]" : ""}`} />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-gray-900 dark:text-white m-0 truncate">{n.title}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 m-0">{n.date}</p>
-              </div>
-              <Badge label={n.priority} />
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -294,7 +235,7 @@ function OverviewSection({ faculty, leaveRequests, notices, onLeaveAction, onAdd
 /* ═══════════════════════════════════════════
    SECTION: FACULTY MANAGEMENT
 ═══════════════════════════════════════════ */
-function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast }) {
+function FacultySection({ faculty, onUpdateFaculty }) {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [newFaculty, setNewFaculty] = useState({
@@ -306,7 +247,6 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
     f.subjects.some(s => s.toLowerCase().includes(search.toLowerCase()))
   );
 
-  // ✅ DYNAMIC: Add new faculty to main state (Syncs to Overview)
   const handleAddSubmit = (e) => {
     e.preventDefault();
     if (!newFaculty.name || !newFaculty.designation) return;
@@ -318,7 +258,6 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
       subjects: newFaculty.subjects.split(",").map(s => s.trim()).filter(s => s),
       workload: Number(newFaculty.workload),
       status: "Active",
-      leaveToday: false,
       experience: newFaculty.experience || "0 yrs"
     };
 
@@ -402,7 +341,6 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-xs font-bold text-gray-900 dark:text-white m-0 truncate">{f.name}</p>
-                  {f.leaveToday && <span className="text-[9px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/25 px-1.5 py-0.5 rounded-full">On Leave</span>}
                 </div>
                 <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 m-0">{f.designation}</p>
               </div>
@@ -422,22 +360,6 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
               </div>
               <MiniBar value={f.workload} max={24} color={f.workload > 18 ? "bg-red-500" : "bg-[#4c6ef5]"} />
             </div>
-
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-               <div className="flex flex-wrap gap-2 justify-between">
-                 {/* ✅ DYNAMIC ACTIONS */}
-                 <button onClick={() => onShowToast(`Loading profile for ${f.name}...`)} className="flex-1 px-2 py-1.5 bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-[10px] font-bold text-gray-700 dark:text-gray-300 transition-colors text-center border border-gray-200 dark:border-gray-700 active:scale-95">
-                   View Profile
-                 </button>
-                 <button onClick={() => onShowToast(`Task assigned to ${f.name}.`)} className="flex-1 px-2 py-1.5 bg-[#4c6ef5]/5 hover:bg-[#4c6ef5]/10 rounded-lg text-[10px] font-bold text-[#4c6ef5] transition-colors text-center border border-[#4c6ef5]/20 active:scale-95">
-                   Assignment
-                 </button>
-                 {/* ✅ LEAVE APPLICATION SYNC: Creates a new pending request */}
-                 <button onClick={() => onRequestLeave(f.name)} className="flex-1 px-2 py-1.5 bg-amber-500/5 hover:bg-amber-500/10 rounded-lg text-[10px] font-bold text-amber-600 transition-colors text-center border border-amber-500/20 active:scale-95">
-                   Leave App.
-                 </button>
-               </div>
-            </div>
           </div>
         ))}
       </div>
@@ -449,40 +371,7 @@ function FacultySection({ faculty, onUpdateFaculty, onRequestLeave, onShowToast 
    SECTION: STUDENT PERFORMANCE
 ═══════════════════════════════════════════ */
 // function PerformanceSection() {
-//   const best = [...STUDENT_PERFORMANCE].sort((a, b) => b.passRate - a.passRate)[0];
-//   return (
-//     <div className="space-y-5">
-//       <div className="bg-gradient-to-r from-[#4c6ef5] to-[#748ffc] rounded-2xl p-5 text-white flex flex-wrap items-center justify-between gap-4">
-//         <div>
-//           <p className="text-xs font-bold opacity-80 uppercase tracking-wider m-0">Best Performing Semester</p>
-//           <h2 className="text-2xl font-bold m-0 mt-1">{best.sem}</h2>
-//           <p className="text-sm opacity-90 m-0 mt-0.5">Pass Rate: <b>{best.passRate}%</b> · Avg Marks: <b>{best.avg}%</b></p>
-//         </div>
-//         <svg viewBox="0 0 24 24" fill="currentColor" className="w-14 h-14 opacity-20"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V17H9v2h6v-2h-2v-1.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
-//       </div>
-//       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-//         {STUDENT_PERFORMANCE.map((sp) => (
-//           <div key={sp.sem} className="bg-white dark:bg-[#13151e] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
-//             <div className="flex items-center justify-between mb-4">
-//               <h4 className="text-sm font-bold text-gray-900 dark:text-white m-0">{sp.sem}</h4>
-//               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sp.passRate >= 90 ? "bg-green-500/10 text-green-600" : sp.passRate >= 80 ? "bg-blue-500/10 text-[#4c6ef5]" : "bg-red-500/10 text-red-500"}`}>{sp.passRate}% Pass</span>
-//             </div>
-//             <div className="space-y-3">
-//               <div>
-//                 <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Pass Rate</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.passRate}%</span></div>
-//                 <MiniBar value={sp.passRate} color={sp.passRate >= 90 ? "bg-green-500" : sp.passRate >= 80 ? "bg-[#4c6ef5]" : "bg-red-500"} />
-//               </div>
-//               <div>
-//                 <div className="flex justify-between mb-1"><span className="text-[10px] font-bold text-gray-500 uppercase">Avg Marks</span><span className="text-[10px] font-bold text-gray-900 dark:text-white">{sp.avg}%</span></div>
-//                 <MiniBar value={sp.avg} color="bg-purple-500" />
-//               </div>
-//               <div className="flex justify-between pt-1"><span className="text-[10px] text-gray-500 font-medium">Students with Backlog</span><span className={`text-[10px] font-bold ${sp.backlog > 15 ? "text-red-500" : "text-green-600"}`}>{sp.backlog}</span></div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
+// ... removed for brevity as it was already commented out
 // }
 
 /* ═══════════════════════════════════════════
@@ -625,7 +514,6 @@ export default function HODDashboard() {
   const [isMobileSidebarOpen, setMobile]    = useState(false);
   const [toast, setToast]                   = useState(null);
 
-  const [leaveRequests, setLeaveRequests]   = useState(DEFAULT_LEAVE_REQUESTS);
   const [notices, setNotices]               = useState(DEFAULT_NOTICES);
   const [meetings, setMeetings]             = useState(DEFAULT_MEETINGS);
   const [faculty, setFaculty]               = useState(DEFAULT_FACULTY);
@@ -638,7 +526,6 @@ export default function HODDashboard() {
       else          { saveShared(key, defaultVal); }
     };
 
-    loadOrInit("shared_leave_requests", DEFAULT_LEAVE_REQUESTS, setLeaveRequests);
     loadOrInit("shared_notices",        DEFAULT_NOTICES,        setNotices);
     loadOrInit("shared_meetings",       DEFAULT_MEETINGS,       setMeetings);
     loadOrInit("shared_faculty",        DEFAULT_FACULTY,        setFaculty);
@@ -648,15 +535,6 @@ export default function HODDashboard() {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   };
-
-  const handleLeaveAction = useCallback((id, action) => {
-    setLeaveRequests(prev => {
-      const updated = prev.map(lr => lr.id === id ? { ...lr, status: action } : lr);
-      saveShared("shared_leave_requests", updated);
-      return updated;
-    });
-    showToast(`Leave request ${action.toLowerCase()} successfully.`);
-  }, []);
 
   const handleAddNotice = useCallback((notice) => {
     setNotices(prev => {
@@ -679,25 +557,6 @@ export default function HODDashboard() {
     showToast("Faculty list updated.");
   }, []);
 
-  // ✅ DYNAMIC: Request leave generated from Faculty Tab -> Syncs to Overview Tab
-  const handleRequestLeave = useCallback((facultyName) => {
-    setLeaveRequests(prev => {
-      const newReq = {
-        id: `LR00${prev.length + 1}`,
-        faculty: facultyName,
-        from: "Today",
-        to: "Tomorrow",
-        reason: "System Generated Leave App",
-        status: "Pending", // This makes it show up in Overview Pending Approvals
-        type: "Personal"
-      };
-      const updated = [newReq, ...prev];
-      saveShared("shared_leave_requests", updated);
-      return updated;
-    });
-    showToast(`Leave application submitted for ${facultyName}`);
-  }, []);
-
   const TABS = [
     { id: "Overview",    label: "Overview",    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> },
     { id: "Faculty",     label: "Faculty",     icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> },
@@ -708,16 +567,14 @@ export default function HODDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Overview":    return <OverviewSection faculty={faculty} leaveRequests={leaveRequests} notices={notices} onLeaveAction={handleLeaveAction} onAddNotice={handleAddNotice} />;
-      case "Faculty":     return <FacultySection faculty={faculty} onUpdateFaculty={handleUpdateFaculty} onRequestLeave={handleRequestLeave} onShowToast={showToast} />;
-      case "Performance": return <PerformanceSection />;
+      case "Overview":    return <OverviewSection faculty={faculty} notices={notices} onAddNotice={handleAddNotice} />;
+      case "Faculty":     return <FacultySection faculty={faculty} onUpdateFaculty={handleUpdateFaculty} />;
       case "Meetings":    return <MeetingsSection meetings={meetings} onMeetingsChange={handleMeetingsChange} />;
       case "Research":    return <ResearchSection research={research} />;
       default:            return null;
     }
   };
 
-  const pendingLeaves = leaveRequests.filter(lr => lr.status === "Pending").length;
   const unreadNotices = notices.filter(n => !n.read).length;
 
   return (
@@ -725,52 +582,6 @@ export default function HODDashboard() {
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={() => setMobile(false)} />
       )}
-
-      <aside className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-[#13151e] border-r border-gray-200 dark:border-gray-800 flex flex-col h-full transition-[width,transform] duration-300 ease-in-out overflow-hidden group/sidebar lg:relative ${isMobileSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64 lg:translate-x-0 lg:w-20 lg:hover:w-64"}`}>
-{/* Yahan naya Back Button wala code paste karein 👇 */}
-        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 shrink-0 h-[73px]">
-          
-          {/* ✅ BACK BUTTON TO DASHBOARD */}
-          <Link href="/faculty/dashboard" className="shrink-0">
-            <button title="Back to Faculty Dashboard" className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center justify-center hover:bg-[#4c6ef5] hover:text-white transition-colors duration-200 shadow-sm cursor-pointer">
-              {/* Back Arrow Icon */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-          </Link>
-
-          {/* PORTAL TITLE (Sidebar expand hone par dikhega) */}
-          <div className="opacity-100 lg:opacity-0 lg:group-hover/sidebar:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
-            <h2 className="font-bold text-sm tracking-tight m-0 text-gray-900 dark:text-white">PBCOE Portal</h2>
-            <p className="text-[10px] text-[#4c6ef5] font-bold uppercase tracking-wider m-0">HOD Dashboard</p>
-          </div>
-        </div>
-        <div className="px-4 py-6 flex-1 overflow-y-auto overflow-x-hidden space-y-1">
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => { setActiveTab(tab.id); setMobile(false); }}
-              className={`w-full text-left p-3 rounded-xl text-sm font-bold transition-all duration-200 flex items-center relative ${activeTab === tab.id ? "bg-[#4c6ef5]/10 text-[#4c6ef5] dark:bg-[#4c6ef5]/20" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50"}`}>
-              <div className="w-6 h-6 flex items-center justify-center shrink-0 relative">
-                {tab.icon}
-                {tab.id === "Overview" && (pendingLeaves + unreadNotices) > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center">
-                    {pendingLeaves + unreadNotices}
-                  </span>
-                )}
-              </div>
-              <span className="whitespace-nowrap ml-4 opacity-100 lg:opacity-0 lg:group-hover/sidebar:opacity-100 transition-opacity duration-300">{tab.label}</span>
-              {activeTab === tab.id && <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-[#4c6ef5] lg:opacity-0 lg:group-hover/sidebar:opacity-100 transition-opacity" />}
-            </button>
-          ))}
-        </div>
-        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center gap-3 overflow-hidden">
-          <div className="w-8 h-8 rounded-full bg-[#4c6ef5] text-white flex items-center justify-center shrink-0 text-sm font-bold">H</div>
-          <div className="whitespace-nowrap opacity-100 lg:opacity-0 lg:group-hover/sidebar:opacity-100 transition-opacity duration-300 overflow-hidden">
-            <p className="text-xs font-bold text-gray-900 dark:text-white m-0 truncate">Dr. Hande K. N.</p>
-            <p className="text-[10px] text-gray-500 m-0">Head of Department</p>
-          </div>
-        </div>
-      </aside>
 
       <main className="flex-1 w-full h-full overflow-x-hidden overflow-y-auto relative">
         <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-[#13151e] border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
@@ -795,9 +606,9 @@ export default function HODDashboard() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 relative ${activeTab === tab.id ? "bg-[#4c6ef5] text-white shadow-md shadow-[#4c6ef5]/20" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"}`}>
                 <div className="w-4 h-4">{tab.icon}</div>
                 <span className="hidden sm:block">{tab.label}</span>
-                {tab.id === "Overview" && (pendingLeaves + unreadNotices) > 0 && (
+                {tab.id === "Overview" && unreadNotices > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center">
-                    {pendingLeaves + unreadNotices}
+                    {unreadNotices}
                   </span>
                 )}
               </button>

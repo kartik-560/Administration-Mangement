@@ -6,14 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { setUser } from "@/features/store/authSlice";
 import { completeSignupApi } from "@/features/auth/signup/signup.api";
 import {
-  LuShieldCheck,
-  LuMail,
-  LuLock,
-  LuEye,
-  LuEyeOff,
-  LuLoader,
-  LuCircleCheck,
-} from "react-icons/lu";
+  ShieldCheck,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader,
+  CircleCheck,
+} from "lucide-react";
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
@@ -34,7 +34,7 @@ export default function SignupPage() {
     if (emailParam) setEmail(emailParam);
   }, [searchParams]);
 
-  const handleSignup = async (e) => {
+const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -56,8 +56,8 @@ export default function SignupPage() {
         // 2. Update Redux
         dispatch(setUser(response.user));
 
-        // 3. Redirect to dashboard
-        router.push("/admin/dashboard");
+        // 3. Redirect to the dynamic onboarding page instead of dashboard
+        router.push("/onboarding"); 
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -79,7 +79,7 @@ export default function SignupPage() {
           {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6">
-              <LuShieldCheck className="text-4xl" />
+              <ShieldCheck className="text-4xl" />
             </div>
             <h1 className="text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight mb-2">
               Finalize Account
@@ -103,7 +103,7 @@ export default function SignupPage() {
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <LuMail className="text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <Mail className="text-slate-400 group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type="email"
@@ -124,7 +124,7 @@ export default function SignupPage() {
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <LuLock className="text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <Lock className="text-slate-400 group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -139,7 +139,7 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors"
                 >
-                  {showPassword ? <LuEyeOff /> : <LuEye />}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function SignupPage() {
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   {/* Changed from LuCheckCircle2 to LuCircleCheck */}
-                  <LuCircleCheck className="text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <CircleCheck className="text-slate-400 group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -171,7 +171,7 @@ export default function SignupPage() {
               className="w-full flex items-center justify-center py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-xl shadow-primary/20 hover:bg-primary/90 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <LuLoader className="animate-spin text-2xl" />
+                <Loader className="animate-spin text-2xl" />
               ) : (
                 "Complete Setup"
               )}

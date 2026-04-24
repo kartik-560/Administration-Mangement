@@ -5,13 +5,13 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { setUser } from "../../../features/store/authSlice";
 import {
-  LuGraduationCap,
-  LuMail,
-  LuLock,
-  LuLoader,
-  LuEye,
-  LuEyeOff,
-} from "react-icons/lu";
+  GraduationCap,
+  Mail,
+  Lock,
+  Loader,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 import { loginUserApi } from "@/features/auth/login/login.api";
 
@@ -24,7 +24,49 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!email || !password) {
+  //     setError("Please enter both email and password.");
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   setError("");
+
+  //   try {
+  //     const response = await loginUserApi(email, password);
+
+  //     if (response.success) {
+  //       // 1. Save the JWT token
+  //       localStorage.setItem("token", response.token);
+
+  //       // 2. THE KEY ADDITION: Save the user object to localStorage
+  //       const userPayload = {
+  //         id: response.user.id,
+  //         name: `${response.user.firstName} ${response.user.lastName}`,
+  //         email: response.user.email,
+  //         role: response.user.role,
+  //         roleId: response.user.roleId,
+  //         collegeId: response.user.collegeId,
+  //       };
+
+  //       localStorage.setItem("user", JSON.stringify(userPayload));
+
+  //       // 3. Update Redux store
+  //       dispatch(setUser(userPayload));
+
+  //       // 4. Redirect to the dashboard
+  //       router.push("/admin/dashboard");
+  //     }
+  //   } catch (err) {
+  //     setError(err.message || "Something went wrong. Please try again.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -38,13 +80,10 @@ export default function LoginPage() {
     try {
       const response = await loginUserApi(email, password);
 
-      if (response.success) {
-        // 1. Save the JWT token
+     if (response.success) {
         localStorage.setItem("token", response.token);
 
-        // 2. THE KEY ADDITION: Save the user object to localStorage
-        // This prevents the AuthChecker from redirecting you back to login
-        // because it allows the app to "remember" you even if Redux resets.
+        // 1. UPDATE PAYLOAD: Include the profile data so Redux has it
         const userPayload = {
           id: response.user.id,
           name: `${response.user.firstName} ${response.user.lastName}`,
@@ -52,16 +91,44 @@ export default function LoginPage() {
           role: response.user.role,
           roleId: response.user.roleId,
           collegeId: response.user.collegeId,
+          registrationStep: response.user.registrationStep,
+          facultyProfile: response.user.facultyProfile, // 👈 Saved to state
+          studentProfile: response.user.studentProfile
         };
 
         localStorage.setItem("user", JSON.stringify(userPayload));
-
-        // 3. Update Redux store
         dispatch(setUser(userPayload));
 
-        // 4. Redirect to the dashboard
-        // Note: Using router.push is fine here since we are moving forward
-        router.push("/admin/dashboard");
+        // 2. Traffic Cop Check
+        if (response.user.registrationStep !== "COMPLETED") {
+          router.push("/onboarding");
+          return;
+        }
+
+        const roleName = response.user.role?.toUpperCase() || "";
+        const roleId = Number(response.user.roleId);
+
+        // --- ROLE-BASED ROUTING ---
+       if (roleName === 'SUPERADMIN' || roleId === 1) {
+          router.push('/superadmin/dashboard'); // 👈 Route for SuperAdmin
+        }
+        else if (roleName === 'STUDENT' || roleId === 5) {
+          router.push('/student/dashboard');
+        } 
+        else if (roleName === 'FACULTY' || roleId === 4) {
+          // 👈 THE NEW RESPONSIBILITY ROUTING
+          const responsibilities = response.user.facultyProfile?.responsibilities || [];
+
+          if (responsibilities.includes('HOD')) {
+            router.push('/faculty/hod'); // Send HODs to their specific portal
+          } else {
+            router.push('/faculty/dashboard'); // Regular teaching faculty
+          }
+        } 
+        else {
+          // Fallback for regular college Admins / Principals (e.g., roleId 2 or 3)
+          router.push('/admin/dashboard'); 
+        }
       }
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -84,7 +151,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="flex flex-col items-center mb-8 text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg mb-4">
-              <LuGraduationCap className="text-white text-3xl" />
+              <GraduationCap className="text-white text-3xl" />
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight mb-1">
               Welcome Back
@@ -109,7 +176,7 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LuMail className="text-slate-400 text-lg" />
+                  <Mail className="text-slate-400 text-lg" />
                 </div>
                 <input
                   type="email"
@@ -127,33 +194,28 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative">
-                {/* Left Icon (Lock) */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LuLock className="text-slate-400 text-lg" />
+                  <Lock className="text-slate-400 text-lg" />
                 </div>
 
-                {/* Input Field */}
                 <input
-                  // Toggle between "text" and "password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  // Note: Increased pr-4 to pr-12 to make room for the right-side button
                   className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                   placeholder="••••••••"
                   required
                 />
 
-                {/* Right Icon (View/Hide Button) */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-primary transition-colors focus:outline-none"
                 >
                   {showPassword ? (
-                    <LuEyeOff className="text-lg" />
+                    <EyeOff className="text-lg" />
                   ) : (
-                    <LuEye className="text-lg" />
+                    <Eye className="text-lg" />
                   )}
                 </button>
               </div>
@@ -183,12 +245,25 @@ export default function LoginPage() {
               className="w-full flex items-center justify-center py-3 px-4 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 focus:ring-4 focus:ring-primary/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <LuLoader className="animate-spin text-xl" />
+                <Loader className="animate-spin text-xl" />
               ) : (
                 "Sign In"
               )}
             </button>
           </form>
+
+          {/* NEW SIGN UP SECTION HERE */}
+          <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+            Don't have an account yet?{" "}
+            <button
+              type="button"
+              onClick={() => router.push('/signup')} 
+              className="font-bold text-primary hover:text-primary/80 hover:underline transition-all outline-none focus:ring-2 focus:ring-primary/50 rounded px-1"
+            >
+              Set up your account
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

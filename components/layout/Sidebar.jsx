@@ -3,29 +3,67 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter, usePathname } from "next/navigation";
-import { LuUsers } from "react-icons/lu";
 import { logout } from "@/features/store/authSlice"; 
 import Link from "next/link";
 import {
+    Users,
+    Bell,
+    BookOpen,
+    GraduationCap,
+    Calendar,
+    FileText,
+    CreditCard,
     LogOut,
-    Settings,
-    ChevronRight,
-    ChevronDown,
     Building,
     User,
     Menu,
-    X
+    X,
+    LayoutDashboard,
+    ClipboardCheck, 
+    CalendarClock, 
+    BarChart,      
+    CheckSquare    
 } from "lucide-react";
+
+// ✅ 1. DEFINE YOUR FIXED ROLE IDs HERE
+const ROLE_IDS = {
+    SUPERADMIN: 1,
+    ADMIN: 2,
+    FACULTY: 4,
+    STUDENT: 5,
+    LIBRARIAN: "replace_with_actual_librarian_role_id",
+    OFFICE_STAFF: "replace_with_actual_office_staff_role_id",
+};
+
+// ✅ 2. DEFINE FACULTY RESPONSIBILITIES
+const FACULTY_RESPONSIBILITIES = {
+    HOD: "HOD",
+    SCHEDULE_HEAD: "SCHEDULE_HEAD",
+    TEACHING: "TEACHING" 
+};
 
 const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [mounted, setMounted] = useState(false); // 👈 HYDRATION SAFEGUARD
     const sidebarRef = useRef(null);
 
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const router = useRouter();
     const pathname = usePathname();
+
+    useEffect(() => {
+        setMounted(true);
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 1024;
+            setIsMobile(mobile);
+            if (mobile) setSidebarOpen(false);
+        };
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
 
     const handleMouseEnter = () => {
         if (!isMobile) setSidebarOpen(true);
@@ -40,30 +78,129 @@ const Sidebar = () => {
         return pathname === href || pathname.startsWith(href + "/");
     };
 
-    useEffect(() => {
-        const checkMobile = () => {
-            const mobile = window.innerWidth < 1024;
-            setIsMobile(mobile);
-            if (mobile) setSidebarOpen(false);
-        };
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
-        return () => window.removeEventListener("resize", checkMobile);
-    }, []);
-
     const handleLogout = () => {
-        // ✅ UPDATED: Clear both token and user object
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
         dispatch(logout());
         router.push("/login");
     };
 
-    const menuItems = [
-        { label: "Overview", icon: Building, href: "/admin/dashboard" },
-        { label: "User Management", icon: LuUsers, href: "/register" },
-    ];
+    // ✅ 3. DYNAMIC MENU LOGIC FOR MULTIPLE RESPONSIBILITIES
+    const getMenuItems = (currentUser) => {
+        if (!currentUser) return []; // Safe return if user isn't loaded yet
+
+        const roleId = currentUser?.roleId;
+
+        switch (roleId) {
+            case ROLE_IDS.SUPERADMIN:
+                return [
+                    { label: "Overview", icon: Building, href: "/superadmin/dashboard" },
+                    { label: "User Management", icon: Users, href: "/register" },
+                    { label: "All Users", icon: Bell, href: "/superadmin/users" },
+                    { label: "Roles", icon: Users, href: "/superadmin/roles" },
+                ];
+            case ROLE_IDS.ADMIN:
+                return [
+                    { label: "Overview", icon: Building, href: "/admin/dashboard" },
+                    { label: "User Management", icon: Users, href: "/register" },
+                    { label: "Notices", icon: Bell, href: "/admin/notices" },
+                    { label: "All Users", icon: Bell, href: "/admin/users" },
+                    { label: "Departments", icon: Bell, href: "/admin/department" },
+                ];
+            
+            case ROLE_IDS.FACULTY:
+                let facultyMenu = [];
+                
+                // 👇 FIX: Deep Check! Finds the array even if backend nested it under .faculty or .facultyProfile
+                const dbResps = currentUser?.responsibilities || 
+                                currentUser?.responsibility ||
+                                currentUser?.faculty?.responsibilities ||
+                                currentUser?.facultyProfile?.responsibilities;
+                
+                // 1. Normalize responsibilities into an array
+                let resps = [];
+                if (Array.isArray(dbResps)) {
+                    resps = dbResps.map(r => r.toUpperCase());
+                } else if (typeof dbResps === 'string') {
+                    resps = dbResps.split(',').map(r => r.trim().toUpperCase());
+                }
+                
+                // Default to TEACHING if no responsibility is set
+                if (resps.length === 0) resps = [FACULTY_RESPONSIBILITIES.TEACHING];
+
+                // 2. Build the menu dynamically based on all their roles
+                if (resps.includes(FACULTY_RESPONSIBILITIES.HOD)) {
+                    facultyMenu.push(
+                        { label: "HOD Dashboard", icon: BarChart, href: "/faculty/hod" },
+                        { label: "Subjects", icon: Users, href: "/faculty/subject" },
+                        // { label: "Meetings", icon: Calendar, href: "/hod/meetings" }
+                    );
+                } 
+                
+                if (resps.includes(FACULTY_RESPONSIBILITIES.SCHEDULE_HEAD)) {
+                    facultyMenu.push(
+                        { label: "Timetable Master", icon: CalendarClock, href: "/faculty/timetable-master" }
+                    );
+                } 
+                
+                if (resps.includes(FACULTY_RESPONSIBILITIES.TEACHING)) {
+                    facultyMenu.push(
+                        { label: "My Dashboard", icon: LayoutDashboard, href: "/faculty/dashboard" },
+                        { label: "Exams & Marks", icon: FileText, href: "/faculty/exams" }
+                    );
+                }
+
+                // 3. Add Shared links
+                facultyMenu.push({ label: "Notices", icon: Bell, href: "/faculty/hod/notice" });
+
+                // 4. Remove duplicates
+                const uniqueFacultyMenu = Array.from(new Map(facultyMenu.map(item => [item.href, item])).values());
+                
+                return uniqueFacultyMenu;
+
+            case ROLE_IDS.STUDENT:
+                return [
+                    { label: "Dashboard", icon: LayoutDashboard, href: "/student/dashboard" },
+                    { label: "Fee Status", icon: GraduationCap, href: "/student/fee-status" },
+                    { label: "Exam", icon: Calendar, href: "/student/upcoming-exams" },
+                    { label: "Notices", icon: Bell, href: "/student/notices" },
+                ];
+            case ROLE_IDS.OFFICE_STAFF:
+                return [
+                    { label: "Dashboard", icon: LayoutDashboard, href: "/office/dashboard" },
+                    { label: "Admissions", icon: FileText, href: "/office/admissions" },
+                    { label: "Fee Collection", icon: CreditCard, href: "/office/fees" },
+                    { label: "Notices", icon: Bell, href: "/office/notices" },
+                ];
+            default:
+                return [
+                    { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+                ];
+        }
+    };
+
+    // 👈 Don't render until client-side hydration is complete to prevent visual glitches
+    if (!mounted) return <div className="w-20 h-full bg-sidebar border-r border-border/40 flex-shrink-0" />;
+
+    const menuItems = getMenuItems(user);
+
+    const displayRoleName = typeof user?.role === 'string' 
+        ? user?.role 
+        : user?.role?.name || "GUEST";
+
+    const isFaculty = user?.roleId === ROLE_IDS.FACULTY;
+    let displayResponsibility = "";
+    
+    // 👇 FIX: Also check deeply nested profiles here for the UI badge
+    const userRespsForDisplay = user?.responsibilities || 
+                                user?.responsibility ||
+                                user?.faculty?.responsibilities ||
+                                user?.facultyProfile?.responsibilities;
+    
+    if (isFaculty && userRespsForDisplay) {
+        const respArray = Array.isArray(userRespsForDisplay) ? userRespsForDisplay : [userRespsForDisplay];
+        displayResponsibility = `(${respArray.join(', ')})`;
+    }
 
     return (
         <>
@@ -93,7 +230,9 @@ const Sidebar = () => {
                         <Building size={20} />
                     </div>
                     <div className={`ml-4 transition-all duration-300 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary">Admin Portal</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary truncate w-40">
+                            {displayRoleName} PORTAL
+                        </p>
                         <p className="text-sm font-bold text-foreground">The Academic</p>
                     </div>
                 </div>
@@ -130,11 +269,10 @@ const Sidebar = () => {
                             <User size={20} />
                         </div>
                         <div className={`ml-3 transition-all duration-300 ${sidebarOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
-                            <p className="text-xs font-bold text-foreground truncate w-40">{user?.name || "Admin"}</p>
+                            <p className="text-xs font-bold text-foreground truncate w-40">{user?.firstName || user?.name || "User"}</p>
                             
-                            {/* ✅ FIXED: Role is now dynamic instead of hardcoded "Superadmin" */}
-                            <p className="text-[9px] font-black uppercase tracking-tighter text-primary">
-                                {user?.role || "User"}
+                            <p className="text-[9px] font-black uppercase tracking-tighter text-primary truncate w-40">
+                                {displayRoleName} {displayResponsibility}
                             </p>
                         </div>
                     </div>

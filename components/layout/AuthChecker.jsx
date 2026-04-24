@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";

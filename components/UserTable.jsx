@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { LuPencil, LuTrash2, LuMoreVertical, LuSearch, LuFilter } from 'react-icons/lu';
+import { Pencil, Trash2, MoreVertical, Search, Filter } from 'lucide-react';
 
 const users = [
     { id: '#SC-2024-001', name: 'Julian Dash', role: 'Student', dept: 'Computer Science', status: 'Active', initials: 'JD' },
@@ -19,10 +19,10 @@ export default function UserTable() {
                 </div>
                 <div className="flex gap-2">
                     <button className="p-2.5 bg-background/50 hover:bg-muted rounded-xl border border-border/50 text-muted-foreground hover:text-primary transition-all">
-                        <LuFilter size={18} />
+                        <Filter size={18} />
                     </button>
                     <button className="p-2.5 bg-background/50 hover:bg-muted rounded-xl border border-border/50 text-muted-foreground hover:text-primary transition-all">
-                        <LuSearch size={18} />
+                        <Search size={18} />
                     </button>
                 </div>
             </div>
@@ -65,10 +65,10 @@ export default function UserTable() {
                                 <td className="px-8 py-5 text-right">
                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button className="p-2 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-lg transition-colors">
-                                            <LuPencil size={16} />
+                                            <Pencil size={16} />
                                         </button>
                                         <button className="p-2 hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded-lg transition-colors">
-                                            <LuTrash2 size={16} />
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
                                 </td>

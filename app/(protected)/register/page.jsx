@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-    LuInfo, LuChevronDown, LuSchool, LuShieldCheck, 
-    LuActivity, LuChartBar, LuUserPlus, LuLoader, LuCircleCheck
-} from 'react-icons/lu';
+    Info, ChevronDown, School, ShieldCheck, 
+    Activity, BarChart3, UserPlus, Loader, CircleCheck
+} from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { registerUserApi, getRolesApi, getCollegesApi } from "@/features/register/register.api";
 
@@ -79,7 +79,7 @@ export default function Register() {
         {/* --- Left-Aligned Header --- */}
         <header className="mb-6 text-left">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-3 shadow-sm">
-                <LuUserPlus className="text-2xl" />
+                <UserPlus className="text-2xl" />
             </div>
             <h1 className="text-3xl font-black font-headline text-foreground tracking-tight">
             Create New User
@@ -150,7 +150,7 @@ export default function Register() {
                             <option key={role.id} value={role.id}>{role.name}</option>
                             ))}
                         </select>
-                        <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@ export default function Register() {
                                 <option value="">Select College</option>
                                 {colleges.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
-                            <LuSchool className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-sm" />
+                            <School className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-sm" />
                         </div>
                     </div>
                 )}
@@ -186,7 +186,7 @@ export default function Register() {
                 type="submit" disabled={isLoading || isFetchingOptions}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-xl font-bold text-md shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50" 
                 >
-                {isLoading ? <LuLoader className="animate-spin" /> : 'Create Account'}
+                {isLoading ? <Loader className="animate-spin" /> : 'Create Account'}
                 </button>
             </div>
             </form>
@@ -195,11 +195,11 @@ export default function Register() {
         {/* --- Minimalist Footer --- */}
         <footer className="mt-6 flex justify-center gap-8 opacity-30 grayscale scale-90">
             <div className="flex items-center gap-2">
-            <LuShieldCheck className="text-xl" />
+            <ShieldCheck className="text-xl" />
             <span className="text-[9px] font-black uppercase tracking-widest">Secure</span>
             </div>
             <div className="flex items-center gap-2">
-            <LuActivity className="text-xl" />
+            <Activity className="text-xl" />
             <span className="text-[9px] font-black uppercase tracking-widest">Live Sync</span>
             </div>
         </footer>

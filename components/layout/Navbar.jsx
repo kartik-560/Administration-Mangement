@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import ThemeToggle from '../ui/ThemeToggle';
 // Import the icons from the Lu (Lucide) set
-import { LuGraduationCap, LuUser, LuSettings, LuLogOut } from 'react-icons/lu';
+import { GraduationCap, User, Settings, LogOut } from 'lucide-react';
 
 export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-2 group">
                 <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform">
                     {/* Replaced Material Symbol with LuGraduationCap */}
-                    <LuGraduationCap className="text-white text-xl" />
+                    <GraduationCap className="text-white text-xl" />
                 </div>
                 <span className="text-xl font-bold font-headline text-slate-900 dark:text-slate-50 tracking-tight">
                     The Ethereal Academic
@@ -72,7 +72,7 @@ export default function Navbar() {
                                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                                 onClick={() => setIsDropdownOpen(false)}
                             >
-                                <LuUser className="text-lg" />
+                                <User className="text-lg" />
                                 My Profile
                             </Link>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
                                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                                 onClick={() => setIsDropdownOpen(false)}
                             >
-                                <LuSettings className="text-lg" />
+                                <Settings className="text-lg" />
                                 Settings
                             </Link>
 
@@ -91,7 +91,7 @@ export default function Navbar() {
                                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
                                 onClick={() => setIsDropdownOpen(false)}
                             >
-                                <LuLogOut className="text-lg" />
+                                <LogOut className="text-lg" />
                                 Logout
                             </button>
                         </div>
